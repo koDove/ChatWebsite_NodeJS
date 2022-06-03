@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>채팅방</title>
+      <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		$(document).ready(function(){
+
+			var socket = io.connect();
+         //메시지가 오면 스크롤을 자동으로 내려준다.
+         $('#messageTextBox').scrollTop($('#messageTextBox')[0].scrollHeight+20);
+
+			socket.on('message', function(data){
+
+            var output='';
+
+            if(socket.id == data.sid){
+				  output += '<ul style="width: 100%;">'
+               output += '   <oi style="text-align: right;">'
+               output += '        <div class="row row-cols-1 justify-content-md-end">'
+               output += '         <div class="col d-block">'+ data.name +'</div><div>'
+               output += '         <div class="col p-2 pt-1 d-inline-block bg-primary text-white" style="word-break:break-all; max-width: 70%; text-align: left;"><span style="text-align: left;">' + data.message+'</span></div>'
+               output += '         </div>'
+               output += '         <div class="col d-block"><span style="font-size: 10px;">'+ data.date+ ' </span> </div>'
+               output += '         </div>'
+               output += '   </oi>'
+               output += '</ul>'
+            }else{
+              output += '<ul>'
+               output += '   <oi>'
+               output += '        <div class="row row-cols-1">'
+               output += '         <div class="col d-block">'+ data.name +'</div><div>'
+               output += '         <div class="col p-2 pt-1 d-inline-block bg-primary text-white" style="word-break:break-all; max-width: 70%; text-align: left;"><span style="text-align: left;">' + data.message+'</span></div>'
+               output += '         </div>'
+               output += '         <div class="col d-block"><span style="font-size: 10px;">'+ data.date+ ' </span> </div>'
+               output += '         </div>'
+               output += '   </oi>'
+               output += '</ul>'
+            }
+            
+
+				$(output).appendTo('#content');
+             $("#printList").load(location.href + " #printList");
+				$('#messageTextBox').scrollTop($('#messageTextBox')[0].scrollHeight+20);
+			});
+
+
+			$('button').click(function(){
+				socket.emit('message', {
+					name: $('#name').val(),
+					message: $('#message').val(),
+					date: new Date().toLocaleString('ko-KR')
+				});
+				$('#message').val('');
+			});
+		});
+
+
+      /*$(window).load(function(){
+         socket.emit('getListRequest');
+      });*/
+	</script>
+
+   </head>
+   <body class="pt-1">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+         <div class="container">
+            <a class="navbar-brand" href="#"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+               <div class="navbar-nav">
+                  <a class="nav-link " aria-current="page" href="/user">연락처</a>
+                  <a class="nav-link active" href="/chat">대화목록</a>
+                  <a class="nav-link" href="/user/logout">로그아웃</a>
+               </div>
+            </div>
+         </div>
+      </nav>
+      <div class="container p-3">
+         <div class="row" style="height: 80vh;  overflow:hidden;word-wrap:break-word;">
+            <div class="col-md-3 h-100 d-inline-block" id="Listdiv">
+
+               <ol class="list-group" id="printList" >
+
+                  <% data1.forEach(function(item, index){ %>
+
+               	<a href="/chat/<%=item.roomidx%>" style="text-decoration:none ">
+                  <li class="list-group-item d-flex justify-content-between align-items-start" style="overflow:hidden; word-wrap:break-word; height: 10vh;">
+                     <div>
+                        <div class="fs-5"style="overflow:hidden; word-wrap:break-word;">
+                           <%=item.sender%>
+                        </div>
+                        <div class="ms-2 me-auto fs-6" style="overflow:hidden; word-wrap:break-word; ">
+                        <%=item.message%>
+                        </div>
+                     </div>
+                  </li>
+                  </a>
+                  <% });%>
+               </ol>
+            </div>
+            <div class="col-md-9 h-100 d-inline-block border border-secondary" style=" ">
+            	<div class="d-block clearfix" style="width: auto; height:72vh; overflow:hidden;word-wrap:break-word; overflow-y:scroll; padding-right: 40px;" id="messageTextBox">
+
+               <% data2.forEach(function(item, index){ %>
+               <% if(owner == item.sender){ %>
+              
+               <ul style="width: 100%;">
+                  <oi style="text-align: right;">
+                       <div class="row row-cols-1 justify-content-md-end">
+                        <div class="col d-block"><%=item.sender%></div><div>
+                        <div class="col p-2 pt-1 d-inline-block bg-primary text-white" style="word-break:break-all; max-width: 70%; text-align: right;"><span style="text-align: left;"><%=item.message%></span></div>
+                        </div>
+                        <div class="col d-block"><span style="font-size: 10px;"><%=item.datedata%></span> </div>
+                        </div>
+                  </oi>
+               </ul>
+               <% } else{ %>  
+
+               <ul>
+                  <oi>
+                       <div class="row row-cols-1">
+                        <div class="col d-block"><%=item.sender%></div><div>
+                        <div class="col p-2 pt-1 d-inline-block bg-primary text-white" style="word-break:break-all; max-width: 70%; text-align: left;"><span style="text-align: left;"><%=item.message%></span></div>
+                        </div>
+                        <div class="col d-block"><span style="font-size: 10px;"><%=item.datedata%></span> </div>
+                        </div>
+                  </oi>
+                  <!--<oi>
+                     <p>
+                        <%=item.sender%><br>
+                        <span class="p-2 pt-1 mb-3 bg-primary text-white"><%=item.message%></span><br>
+                        <span style="font-size: 10px;"><%=item.datedata%></span> 
+                     </p>
+                  </oi>-->
+               </ul>
+               <% }%>
+               <% });%>
+
+					<data id="content">
+					</data>
+
+            	</div>
+            	<div>
+            		<form class="row g-3" target="iframe1">
+  
+  <div class="col-sm-11 p-2" >
+  	<iframe id="iframe1" name="iframe1" style="display:none"></iframe>
+    <input type="text" class="form-control" id="message" placeholder="메시지를 입력해주세요." >
+  </div>
+
+  <div class="col-sm-1 p-2">
+    <button class="btn btn-primary mb-3">전송</button>
+  </div>
+</form>
+            	</div>
+            </div>
+         </div>
+      </div>
+   </body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title><%= title %>의 연락처</title>
+	<style type="text/css">
+		caption{
+			caption-side: bottom;
+			text-align: right;
+    	}
+		.button_blue {
+     		background-color: #008CBA;
+    		border: none;
+    		color: white;
+    		padding: 6px 18px;
+     		text-align: center;
+      		text-decoration: none;
+     		font-size: 16px;
+    	}
+    	.button_red {
+     		background-color: #f44336;
+    		border: none;
+    		color: white;
+    		padding: 6px 18px;
+     		text-align: center;
+      		text-decoration: none;
+     		font-size: 16px;
+    	}
+    	.button_green {
+     		background-color: #4CAF50;
+    		border: none;
+    		color: white;
+    		padding: 6px 18px;
+     		text-align: center;
+      		text-decoration: none;
+     		font-size: 16px;
+    	}
+    	th,td{
+    		text-align: center;
+    		vertical-align: middle;
+    		font-size: 16px;
+    	}
+
+	</style>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+         <div class="container">
+            <a class="navbar-brand" href="#"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+               <div class="navbar-nav">
+                  <a class="nav-link active" aria-current="page" href="/user">연락처</a>
+                  <a class="nav-link" href="/chat">대화목록</a>
+                  <a class="nav-link" href="/user/logout">로그아웃</a>
+               </div>
+            </div>
+         </div>
+      </nav>
+	<div class="container">
+		<h3>연락처 목록</h3>
+
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>#</th>
+			<th>닉네임</th>
+			<th>연락처</th>
+			<th>이메일</th>
+			<th>&nbsp;</th>
+		</tr>
+		</thead>
+		<tbody>
+		<% data.forEach(function(item, index){ %>
+		
+		<tr>
+			<td><%=index+1%></td>
+			<td><%=item.nickname%></td>
+			<td><%=item.phone_number%></td>
+			<td><%=item.email%></td>
+			<td>
+				<button class="button_green" type="button" onClick="location.href='/chatting/<%=item.nickname%>'">채팅</button>
+				<button class="button_blue" type="button" onClick="location.href='/user/edit/<%=item.id%>'">수정</button>
+				<button id="delete" class="button_red" type="button" onclick="location.href='/user/delete/<%=item.id%>'">삭제</button>
+			</td>
+		</tr>
+		<% }); %>
+		</tbody>
+		
+		<tfoot>
+		<caption>
+			
+			<button class="button_blue" type="button" onClick="location.href='/user/insert'">연락처 추가</button>
+		</caption>
+		</tfoot>
+
+	</table>
+	</div>
+
+		
+</body>
+</html>
